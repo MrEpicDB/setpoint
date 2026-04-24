@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: setpoint
+      POSTGRES_PASSWORD: VqV79T25RgxceqeJKqu6
+      POSTGRES_DB: setpoint
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  gui:
+    build: ./gui
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://setpoint:VqV79T25RgxceqeJKqu6@db:5432/setpoint
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
