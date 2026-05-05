@@ -22,12 +22,13 @@ export default function Booking() {
 
   const getWeekDays = (date: Date) => {
     const week = [];
-    const curr = new Date(date);
-    const first = curr.getDate() - curr.getDay();
+    const start = new Date(date);
+    start.setDate(start.getDate() - start.getDay());
 
     for (let i = 0; i < 7; i++) {
-      const day = new Date(curr.setDate(first + i));
-      week.push(new Date(day));
+      const day = new Date(start);
+      day.setDate(start.getDate() + i);
+      week.push(day);
     }
     return week;
   };
