@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { colors } from '../colors';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getSessions } from './actions';
 
 interface Event {
   id: string;
@@ -12,13 +13,23 @@ interface Event {
   type: 'session' | 'event';
 }
 
-const mockEvents: Event[] = [
-  { id: '1', title: 'IVC Mens Training', start: new Date(2026, 0, 15, 10, 0), end: new Date(2026, 0, 15, 14, 0), type: 'session' },
-  { id: '3', title: 'Ravens Mixed Training', start: new Date(2026, 0, 18, 9, 0), end: new Date(2026, 0, 18, 11, 30), type: 'session' },
-];
-
 export default function Booking() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    getSessions().then((sessions) => {
+      setEvents(
+        sessions.map((s) => ({
+          id: s.id,
+          title: s.name,
+          start: new Date(s.startTime),
+          end: new Date(s.endTime),
+          type: 'session' as const,
+        }))
+      );
+    });
+  }, []);
 
   const getWeekDays = (date: Date) => {
     const week = [];
@@ -53,7 +64,7 @@ export default function Booking() {
   };
 
   const getEventsForDayAndHour = (day: Date, hour: number) => {
-    return mockEvents.filter(event => {
+    return events.filter(event => {
       if (event.start.toDateString() !== day.toDateString()) return false;
       return event.start.getHours() === hour;
     });
