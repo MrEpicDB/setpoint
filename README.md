@@ -14,4 +14,9 @@ This project has been made with Conventional Commits. If contributing to this pr
 
 # Database Information
 To open the database inside a browser either run `npx prisma studio` inside the `/gui` then open [http://localhost:51212].
-Since this project uses Prisma to manage the database, when you update the `schema.prisma` file, you will need to run `npx prisma migrate dev --name add-tag-here` inside of the `/gui` directory.
+Since this project uses Prisma to manage the database, when you update the `schema.prisma` file, you will need to run `npx prisma migrate dev --name add-session-model` inside of the `/gui` directory.
+
+To find if the database port being in use run `sudo lsof -i :5432`. Note this ONLY works in WSL or a linux based cmd.
+
+# Rebuild and restart docker compose files
+Run `docker compose build --no-cache gui && docker compose up -d gui` which will restart and rebuild the docker compose file.
