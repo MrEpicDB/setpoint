@@ -136,7 +136,6 @@ export default function Booking() {
                 <div
                   className={`text-lg font-semibold ${day.toDateString() === new Date().toDateString() ? 'rounded-full w-8 h-8 mx-auto flex items-center justify-center' : ''}`}
                   style={{
-                    color: colors.text,
                     backgroundColor: day.toDateString() === new Date().toDateString() ? colors.button : 'transparent',
                     color: day.toDateString() === new Date().toDateString() ? 'white' : colors.text
                   }}
