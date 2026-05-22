@@ -23,6 +23,7 @@ gui/build
 # misc
 gui/.DS_Store
 gui/*.pem
+.ignore/
 
 # debug
 gui/npm-debug.log*
