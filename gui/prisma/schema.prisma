@@ -14,15 +14,15 @@ model User {
   password  String
   firstName String
   lastName  String
-  phone     String?
+  phone     String
   level     SkillLevel @default(BEGINNER)
   createdAt DateTime @default(now())
 
 
   // Emergency contact
-  emergencyContactName     String?
-  emergencyContactPhone    String?
-  emergencyContactRelation String?
+  emergencyContactName     String
+  emergencyContactPhone    String
+  emergencyContactRelation String
 
 
   // Relations
