@@ -7,22 +7,166 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   password  String
-  level     Int       @default(1)
-  createdAt DateTime  @default(now())
-  sessions  Session[] @relation("SessionAttendees")
+  firstName String
+  lastName  String
+  phone     String?
+  level     SkillLevel @default(BEGINNER)
+  createdAt DateTime @default(now())
+
+
+  // Emergency contact
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  emergencyContactRelation String?
+
+
+  // Relations
+  clubMemberships  ClubMember[]
+  bookings         Booking[]
+  messagesSent     Message[]      @relation("MessageSender")
+  messagesReceived Message[]      @relation("MessageRecipient")
+  notifications    Notification[]
+  payments         Payment[]
 }
 
-model Session {
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+
+model Club {
   id          String   @id @default(uuid())
   name        String
+  description String?
+  location    String
+  createdAt   DateTime @default(now())
+
+
+  // Relations
+  members  ClubMember[]
+  sessions Session[]
+}
+
+model ClubMember {
+  id       String         @id @default(uuid())
+  userId   String
+  clubId   String
+  role     ClubMemberRole @default(PLAYER)
+  joinedAt DateTime       @default(now())
+
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  club Club @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, clubId])
+}
+
+enum ClubMemberRole {
+  PLAYER
+  COACH
+  ORGANISER
+}
+
+
+model Session {
+  id          String        @id @default(uuid())
+  clubId      String
+  name        String
   description String
+  agenda      String?
+  skillLevel  SkillLevel    @default(BEGINNER)
+  capacity    Int
+  price       Int           // stored in pence (Stripe uses smallest currency unit)
   startTime   DateTime
   endTime     DateTime
   location    String
-  attendees   User[]   @relation("SessionAttendees")
+  status      SessionStatus @default(SCHEDULED)
+  createdAt   DateTime      @default(now())
+
+
+  // Relations
+  club     Club      @relation(fields: [clubId], references: [id])
+  bookings Booking[]
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+
+model Booking {
+  id        String   @id @default(uuid())
+  userId    String
+  sessionId String
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id])
+  session Session  @relation(fields: [sessionId], references: [id])
+  payment Payment?
+
+  @@unique([userId, sessionId])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  bookingId       String        @unique
+  userId          String
+  amountPence     Int
+  currency        String        @default("gbp")
+  status          PaymentStatus @default(PENDING)
+  stripePaymentId String?       @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+
+  // Relations
+  booking Booking @relation(fields: [bookingId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  recipientId String
+  content     String
+  read        Boolean  @default(false)
   createdAt   DateTime @default(now())
+
+
+  // Relations
+  sender    User @relation("MessageSender", fields: [senderId], references: [id])
+  recipient User @relation("MessageRecipient", fields: [recipientId], references: [id])
+}
+
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
 }
