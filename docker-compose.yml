@@ -10,6 +10,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U setpoint"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
   gui:
     build: ./gui
@@ -19,7 +24,8 @@ services:
     environment:
       DATABASE_URL: postgresql://setpoint:VqV79T25RgxceqeJKqu6@db:5432/setpoint
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
