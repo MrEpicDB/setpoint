@@ -42,11 +42,12 @@ enum SkillLevel {
 
 
 model Club {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  location    String
-  createdAt   DateTime @default(now())
+  id               String   @id @default(uuid())
+  name             String
+  description      String?
+  location         String
+  requiresApproval Boolean  @default(false)
+  createdAt        DateTime @default(now())
 
 
   // Relations
@@ -55,11 +56,12 @@ model Club {
 }
 
 model ClubMember {
-  id       String         @id @default(uuid())
+  id       String           @id @default(uuid())
   userId   String
   clubId   String
-  role     ClubMemberRole @default(PLAYER)
-  joinedAt DateTime       @default(now())
+  role     ClubMemberRole   @default(PLAYER)
+  status   MembershipStatus @default(APPROVED)
+  joinedAt DateTime         @default(now())
 
 
   // Relations
@@ -73,6 +75,11 @@ enum ClubMemberRole {
   PLAYER
   COACH
   ORGANISER
+}
+
+enum MembershipStatus {
+  PENDING
+  APPROVED
 }
 
 
